@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Palette Harmony</title>
+  <meta name="description" content="A color palette generator grounded in color theory: analogous, complementary, triadic and more, with locking, editing and export.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='11' cy='12' r='8' fill='%23e76f51'/%3E%3Ccircle cx='21' cy='12' r='8' fill='%232a9d8f' fill-opacity='.85'/%3E%3Ccircle cx='16' cy='21' r='8' fill='%23e9c46a' fill-opacity='.85'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="visually-hidden">Palette Harmony</h1>
+    <div class="btn-group history">
+      <button id="undo-btn" class="btn icon-btn" type="button" title="Undo (Ctrl+Z)" aria-label="Undo">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
+      </button>
+      <button id="redo-btn" class="btn icon-btn" type="button" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">
+        <svg class="icon" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>
+      </button>
+    </div>
+    <div class="size-stepper" role="group" aria-label="Palette size">
+      <button id="size-minus" type="button" title="Remove a color" aria-label="Remove a color">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+      </button>
+      <input id="size-input" type="number" min="2" max="10" step="1" inputmode="numeric" aria-label="Number of colors" title="Number of colors (2–10)">
+      <button id="size-plus" type="button" title="Add a color" aria-label="Add a color">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+    <button id="generate-btn" class="btn primary" type="button" title="Generate new colors (Space)">
+      Generate <kbd>Space</kbd>
+    </button>
+    <button id="theory-btn" class="wheel-btn" type="button" aria-haspopup="dialog" aria-controls="theory-dialog" aria-label="Show color theory details" title="Color theory">
+      <span class="wheel-disc" aria-hidden="true"></span>
+      <svg id="wheel-icon" viewBox="-100 -100 200 200" aria-hidden="true"></svg>
+    </button>
+    <label class="field harmony-field">
+      <span>Harmony</span>
+      <select id="harmony-select">
+        <option value="auto">Auto</option>
+        <option value="analogous">Analogous</option>
+        <option value="complementary">Complementary</option>
+        <option value="split">Split-complementary</option>
+        <option value="triadic">Triadic</option>
+        <option value="tetradic">Tetradic</option>
+        <option value="square">Square</option>
+        <option value="monochromatic">Monochromatic</option>
+      </select>
+    </label>
+  </header>
+
+  <main id="palette" class="palette" aria-label="Palette"></main>
+
+  <dialog id="theory-dialog" class="modal" aria-labelledby="harmony-name">
+    <div class="modal-body">
+      <button id="theory-close" class="btn icon-btn modal-close" type="button" aria-label="Close" title="Close (Esc)">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <div class="wheel" aria-hidden="true">
+        <div class="wheel-disc"></div>
+        <svg id="wheel-svg" viewBox="-100 -100 200 200"></svg>
+      </div>
+      <div class="theory">
+        <p class="eyebrow">Color theory</p>
+        <h2 id="harmony-name"></h2>
+        <p id="harmony-desc"></p>
+        <p id="fit-text" class="fit"></p>
+        <div class="wheel-choice">
+          <label class="field">
+            <span>Color wheel</span>
+            <select id="wheel-select" title="Which color wheel defines opposite and evenly spaced hues">
+              <option value="ryb">Artist (RYB)</option>
+              <option value="oklch">Perceptual (OKLCH)</option>
+            </select>
+          </label>
+          <p id="wheel-note" class="muted small"></p>
+        </div>
+        <p id="contrast-text" class="muted small"></p>
+      </div>
+      <div class="export">
+        <div>
+          <p class="eyebrow">Export</p>
+          <div class="export-buttons">
+            <button class="btn" type="button" data-export="hex">Copy HEX</button>
+            <button class="btn" type="button" data-export="css">Copy CSS</button>
+            <button class="btn" type="button" data-export="json">Copy JSON</button>
+            <button class="btn" type="button" data-export="link">Copy link</button>
+          </div>
+        </div>
+        <p class="muted small hint">Click a hex code to edit it in RGB or HSL; edited colors lock automatically. Drag a color to reorder it (on touch screens, use its grip), or press Alt + arrow keys.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <div id="color-editor" class="popover" role="dialog" aria-label="Edit color" hidden>
+    <div class="popover-preview"></div>
+    <div class="popover-row">
+      <label class="popover-hex">
+        <span aria-hidden="true">#</span>
+        <input id="editor-hex" type="text" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex value">
+      </label>
+      <div class="mode-toggle" role="group" aria-label="Color model">
+        <button type="button" data-mode="rgb">RGB</button>
+        <button type="button" data-mode="hsl">HSL</button>
+      </div>
+    </div>
+    <div class="rgb-rows">
+      <label class="rgb-row"><span class="ch-label"></span><input type="range" step="1" data-channel="0"><input type="number" min="0" step="1" data-channel="0"></label>
+      <label class="rgb-row"><span class="ch-label"></span><input type="range" step="1" data-channel="1"><input type="number" min="0" step="1" data-channel="1"></label>
+      <label class="rgb-row"><span class="ch-label"></span><input type="range" step="1" data-channel="2"><input type="number" min="0" step="1" data-channel="2"></label>
+    </div>
+    <p class="popover-note">Editing locks this color.</p>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/color.js"></script>
+  <script src="js/harmony.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
