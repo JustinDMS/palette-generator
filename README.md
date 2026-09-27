@@ -51,6 +51,14 @@ Open `index.html` directly in a browser, or serve the folder:
 python -m http.server 8000
 ```
 
+## Releasing a new version
+
+The version number shown in the top bar lives in `index.html`. For each release, bump it in the label and in the `?v=` query strings on the stylesheet and script tags. The query strings make browsers fetch the new files instead of serving stale cached copies.
+
+## Night mode / Dark Reader
+
+The page includes `<meta name="darkreader-lock">`, which tells Dark Reader-based night modes (the Dark Reader extension, Brave's Night Mode) to leave it alone. Those modes recolor the swatches, which defeats the purpose of a palette tool. They also fall behind when colors change quickly, leaving swatches painted with stale colors.
+
 ## Deploy to GitHub Pages
 
 1. Create a repository and push these files to the root of the `main` branch.

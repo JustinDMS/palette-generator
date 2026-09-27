@@ -53,6 +53,7 @@ button, select, input, label { touch-action: manipulation; }
 /* ---------- Top bar ---------- */
 
 .topbar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,6 +75,15 @@ button, select, input, label { touch-action: manipulation; }
 }
 
 .harmony-field { margin-left: 4px; }
+
+.app-version {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  font: 12px var(--mono);
+  color: var(--muted);
+}
 
 /* Palette size: [ - ] [ n ] [ + ] */
 .size-stepper {
@@ -563,11 +573,13 @@ kbd {
 }
 
 @media (max-width: 760px) {
-  /* Two rows: [undo/redo] [size] [generate]  /  [wheel] [harmony]. */
-  .topbar { display: grid; grid-template-columns: auto auto minmax(0, 1fr); }
+  /* Two rows: [undo/redo] [size] [generate]  /  [wheel] [harmony] [version]. */
+  .topbar { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; }
+  #generate-btn { grid-column: 3 / -1; }
   #generate-btn kbd { display: none; }
   .wheel-btn { justify-self: end; }
-  .harmony-field { grid-column: 2 / -1; margin-left: 0; }
+  .harmony-field { grid-column: 2 / 4; margin-left: 0; }
+  .app-version { position: static; transform: none; }
   .field select { flex: 1; min-width: 0; }
 
   .palette { flex-direction: column; min-height: 0; }
