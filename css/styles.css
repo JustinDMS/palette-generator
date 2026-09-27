@@ -45,6 +45,9 @@ body {
 
 button, select, input { font: inherit; }
 
+/* No double-tap-to-zoom on controls, so quick repeated taps (e.g. Generate) all register. */
+button, select, input, label { touch-action: manipulation; }
+
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 /* ---------- Top bar ---------- */
@@ -166,8 +169,6 @@ kbd {
 .palette { flex: 1; display: flex; min-height: 320px; overflow: hidden; overflow: clip; }
 
 .swatch {
-  --swatch: #cccccc;
-  --ink: #111111;
   position: relative;
   flex: 1 1 0;
   min-width: 0;
@@ -177,8 +178,9 @@ kbd {
   justify-content: flex-end;
   gap: 18px;
   padding: 24px 8px 36px;
-  background: var(--swatch);
-  color: var(--ink);
+  /* background-color and color are set inline per swatch by app.js */
+  background-color: #cccccc;
+  color: #111111;
 }
 
 .swatch-tools { display: flex; flex-direction: column; gap: 4px; }
@@ -199,7 +201,7 @@ kbd {
 }
 
 .tool .icon { width: 20px; height: 20px; }
-.tool:hover:not(:disabled) { background: color-mix(in srgb, var(--ink) 14%, transparent); }
+.tool:hover:not(:disabled) { background: color-mix(in srgb, currentColor 14%, transparent); }
 .tool:disabled { cursor: default; }
 
 .swatch:hover .tool,
@@ -229,7 +231,7 @@ kbd {
 }
 
 .hex-btn:hover,
-.hex-btn[aria-expanded="true"] { background: color-mix(in srgb, var(--ink) 12%, transparent); }
+.hex-btn[aria-expanded="true"] { background: color-mix(in srgb, currentColor 12%, transparent); }
 .hex-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 0; }
 
 .swatch-meta {

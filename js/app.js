@@ -252,10 +252,14 @@
     return sw;
   }
 
-  /** Apply color-dependent visuals to a swatch. */
+  /**
+   * Apply color-dependent visuals to a swatch. The colors are set as real properties rather
+   * than CSS custom properties: iOS Safari can skip the repaint when a custom property changes
+   * quickly (rapid generates, reorders), leaving a swatch painted with its previous color.
+   */
   function paintSwatch(sw, hex) {
-    sw.style.setProperty('--swatch', hex);
-    sw.style.setProperty('--ink', C.inkFor(hex));
+    sw.style.backgroundColor = hex;
+    sw.style.color = C.inkFor(hex);
     const [r, g, b] = C.hexToRgb(hex).map((v) => Math.round(v * 255));
     const { l, c, h } = C.hexToOklch(hex);
     sw.querySelector('.swatch-meta').innerHTML =
